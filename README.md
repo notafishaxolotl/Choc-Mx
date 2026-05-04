@@ -6,7 +6,6 @@
 - [Sofle Choc MX pcb](https://a.aliexpress.com/_EwxQ4QK)
 - [hot swap sockets](https://a.aliexpress.com/_EIEXSI6)
 - [side switch](https://a.aliexpress.com/_EwprrG2)
-- [reset button](https://a.aliexpress.com/_EG1B8q2)
 - [oled](https://a.aliexpress.com/_EQnXhqO)
 - [case](https://a.aliexpress.com/_EJCsQCq)
 - [4.7k ohm resistor](https://a.aliexpress.com/_EwEcmei)
