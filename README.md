@@ -19,3 +19,5 @@
 - [ec11 rotary encoder/caps](https://a.aliexpress.com/_EGeZBs6)
 - [XH2.54 connector m](https://a.aliexpress.com/_EyGc2GA)
 - [pin hedders](https://a.aliexpress.com/_EH4UOjy)
+
+- [tutorial repo](https://github.com/db-ok/SofleChocWireless/blob/main/docs%2Fbuild_guide_choc_wireless.md)
