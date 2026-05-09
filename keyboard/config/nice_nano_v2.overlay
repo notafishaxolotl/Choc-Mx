@@ -1,0 +1,77 @@
+/*
+ * nice_nano_v2.overlay
+ *
+ * Adds:
+ *  - SSD1306 OLED (unchanged)
+ *  - WS2812 RGB underglow via SPI (nice!nano v2 exposes SPI on P0.06)
+ *  - ext-power node to cut LED power during sleep
+ */
+
+/ {
+    chosen {
+        zmk,display       = &oled;
+        zmk,underglow     = &led_strip;     /* ← wire ZMK to the strip */
+    };
+
+    ext-power {
+        compatible        = "zmk,ext-power-generic";
+        control-gpios     = <&gpio0 13 GPIO_ACTIVE_HIGH>;
+    };
+};
+
+/* ── OLED ─────────────────────────────────────────────────────────────────── */
+&pro_micro_i2c {
+    status = "okay";
+
+    oled: ssd1306@3c {
+        compatible        = "solomon,ssd1306fb";
+        reg               = <0x3c>;
+        width             = <128>;
+        height            = <32>;
+        segment-offset    = <0>;
+        page-offset       = <0>;
+        display-offset    = <0>;
+        multiplex-ratio   = <31>;
+        segment-remap;
+        com-invdir;
+        com-sequential;
+        prechargep        = <0x22>;
+    };
+};
+
+/* ── RGB underglow (WS2812 / SK6812 via SPI MOSI = P0.06) ────────────────── */
+/*
+ * The nice!nano v2 does not expose a dedicated SPI peripheral on the standard
+ * Pro-Micro pin-out, so we use the software-controlled SPI (spi_gpio / bitbang)
+ * that ZMK's nRF52840 board files expose as &spi1.
+ *
+ * Physical wiring:
+ *   DATA-IN of your LED strip  →  nice!nano pin 4 (P0.06 / D4 in Pro-Micro numbering)
+ *   VCC of strip               →  EXT_POWER (switch via the ext-power node above)
+ *   GND of strip               →  GND
+ *
+ * If your strip is on a different pin, change mosi-pin accordingly.
+ */
+&spi1 {
+    compatible = "nordic,nrf-spim";
+    status     = "okay";
+
+    pinctrl-0  = <&spi1_default>;
+    pinctrl-names = "default";
+
+    /* WS2812 requires 800 kHz carrier; ZMK's driver handles the encoding */
+    led_strip: ws2812@0 {
+        compatible        = "worldsemi,ws2812-spi";
+        reg               = <0>;
+        spi-max-frequency = <4000000>;
+
+        /*
+         * Set chain-length to the total number of RGB LEDs on each half.
+         * Sofle RGB typically has 6 underglow LEDs per half → adjust if yours differ.
+         */
+        chain-length      = <6>;
+        spi-one-frame     = <0x70>;
+        spi-zero-frame    = <0x40>;
+        color-mapping     = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
+    };
+};
